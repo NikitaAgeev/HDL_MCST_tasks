@@ -1,6 +1,4 @@
 module log(
-    input reg clk,
-
     input reg [7:0] number,
     output wire [2:0] result
 );

@@ -9,7 +9,7 @@ reg clk, reset;
 reg [7:0] number;
 wire [2:0] result;
 
-log test_log(.clk(clk), .number(number), .result(result));
+log test_log(.number(number), .result(result));
 
 initial begin
     clk = 0;

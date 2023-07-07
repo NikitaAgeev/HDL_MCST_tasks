@@ -9,7 +9,7 @@ reg clk, reset;
 reg [2:0] number;
 wire [7:0] result;
 
-decoder test_decoder(.clk(clk), .N(number), .result(result));
+decoder test_decoder(.N(number), .result(result));
 
 initial begin
     clk = 0;
