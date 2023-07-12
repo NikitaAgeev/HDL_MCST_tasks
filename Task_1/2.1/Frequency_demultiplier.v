@@ -1,7 +1,8 @@
 module F_demul
 #(
     parameter PERIOD = 6,
-    parameter ON_TIME = 3
+    parameter ON_TIME = PERIOD/2,
+    parameter COUNTER_SIZE = $clog(PERIOD)
 )
 (
     input reg clk,
@@ -10,7 +11,7 @@ module F_demul
     output reg demul_freq
 );
 
-reg [7:0] counter;
+reg [COUNTER_SIZE -1 :0] counter;
 
 always @(posedge clk) begin
     
