@@ -1,5 +1,5 @@
 module log(
-    input reg [7:0] number,
+    input wire [7:0] number,
     output wire [2:0] result
 );
 

@@ -1,7 +1,7 @@
 
 
 module even (
-    input reg [7:0] num,
+    input wire [7:0] num,
     output wire result
 );
 

@@ -5,7 +5,7 @@ module F_demul
     parameter COUNTER_SIZE = $clog(PERIOD)
 )
 (
-    input reg clk,
+    input wire clk,
     input wire reset,
 
     output reg demul_freq

@@ -1,5 +1,5 @@
 module decoder(
-    input reg [2:0]  N,
+    input wire [2:0]  N,
     output wire [7:0] result
 );
 

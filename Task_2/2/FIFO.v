@@ -14,7 +14,7 @@ module FIFO
     output reg rd_val,
     
     input wire wr_en,
-    input reg [DATA_WIDTH -1:0] wr_data,
+    input wire [DATA_WIDTH -1:0] wr_data,
     output reg wr_ready
 );
 

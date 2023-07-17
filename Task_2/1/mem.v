@@ -8,12 +8,12 @@ module mem
     input wire clk,
     
     input wire rd_en,
-    input reg [ADDRSIZE -1: 0] rd_addr,
+    input wire [ADDRSIZE -1: 0] rd_addr,
     output reg [DATA_WIDTH -1: 0] rd_data,
 
     input wire wr_en,
-    input reg [ADDRSIZE -1: 0] wr_addr,
-    input reg [DATA_WIDTH -1: 0] wr_data
+    input wire [ADDRSIZE -1: 0] wr_addr,
+    input wire [DATA_WIDTH -1: 0] wr_data
 );
 
 reg [DATA_WIDTH -1:0] memory_arr [MAX_ADR -1:0];
