@@ -19,9 +19,9 @@ module mem
 reg [DATA_WIDTH -1:0] memory_arr [MAX_ADR -1:0];
 
 always @(posedge clk) begin
-    if((rd_en == 1) && (wr_en == 0))
+    if(rd_en & ~wr_en))
         rd_data <= memory_arr[rd_addr];
-    else if((wr_en == 1) && (rd_en == 0))
+    else if(wr_en & ~rd_en)
         memory_arr[wr_addr] <= wr_data;
 
 end 

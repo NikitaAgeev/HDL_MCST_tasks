@@ -18,38 +18,45 @@ module FIFO
     output reg wr_ready
 );
 
-reg [$clog2(FIFO_DEPTH) -1:0] capacity;  //number of ring list items 
-reg [$clog2(FIFO_DEPTH) -1:0] head;      //head of ring list
+parameter MEMORY_CNT_SIZE = $clog2(FIFO_DEPTH) 
+
+reg [MEMORY_CNT_SIZE -1:0] tale;  //tale of ring list 
+reg [MEMORY_CNT_SIZE -1:0] head;  //head of ring list
 
 reg [DATA_WIDTH -1:0] mem [FIFO_DEPTH -1:0]; //ring list mem
 
-assign wr_ready = (capacity > FIFO_DEPTH) ? 0 : 1; //capacity check
+assign wr_ready = ( (tale + 1 == head) || ( (tale == FIFO_DEPTH) && (head == 0) ) ) ? 0 : 1; //capacity check
+//                  |tale before head|    |  tale before head through overflow  |
 
 always @(posedge clk) begin
-    if(reset == 1) begin //reset
+    if(reset) begin //reset
         capacity <= 0;
         head <= 0;
         rd_val <= 0;
-        rd_data <= 0;
-
-    end else if((rd_en == 1) && (wr_en == 0)) begin  //read
-        if(capacity > 0) begin                          //we have data
+        rd_data <= 0;4
+    end
+end
+    
+always @(posedge clk) begin
+    if(rd_en & ~wr_en & ~reset) begin               //read
+        if(head != tale) begin                          //we have data
             head <= (head < FIFO_DEPTH)? head + 1: 0;       //new head val
                                                             //the ternary operator implements the transition
-                                                            //of the head to the top of the list
-            capacity <= capacity - 1;                   
+                                                            //of the head to the top of the list                   
             rd_data <= mem[head];
             rd_val <= 1;
         end else begin                                  //FIFO is empty
             rd_val <= 0;
         end
-    end else if ((rd_en == 0)&&(wr_en == 1)) begin
-        if((capacity < FIFO_DEPTH) || (capacity == FIFO_DEPTH)) begin
-            capacity <= capacity + 1;
-            mem[((head + capacity) < FIFO_DEPTH)? head + capacity: head + capacity - FIFO_DEPTH] <= wr_data;
-            //   |checking data for overflow   |  |no overflow  |  |overflow                  |
-            //take data from ring list
-        end
+    end
+end
+
+always @(posedge clk) begin
+    if (~rd_en & wr_en & ~reset) begin              //tale
+        tale <= (tale < FIFO_DEPTH)? tale + 1: 0;       //new tale val
+                                                        //the ternary operator implements the transition
+                                                        //of the tale to the top of the list                   
+        mem[(tale < FIFO_DEPTH)? tale + 1: 0] <= wr_data;
     end
 end
 
