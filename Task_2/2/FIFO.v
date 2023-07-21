@@ -18,28 +18,28 @@ module FIFO
     output reg wr_ready
 );
 
-parameter MEMORY_CNT_SIZE = $clog2(FIFO_DEPTH) 
+parameter MEMORY_CNT_SIZE = $clog2(FIFO_DEPTH);
 
-reg [MEMORY_CNT_SIZE -1:0] tale;  //tale of ring list 
+reg [MEMORY_CNT_SIZE -1:0] tail;  //tail of ring list 
 reg [MEMORY_CNT_SIZE -1:0] head;  //head of ring list
 
-reg [DATA_WIDTH -1:0] mem [FIFO_DEPTH -1:0]; //ring list mem
+reg [DATA_WIDTH -1:0] mem [FIFO_DEPTH :0]; //ring list mem
 
-assign wr_ready = ( (tale + 1 == head) || ( (tale == FIFO_DEPTH) && (head == 0) ) ) ? 0 : 1; //capacity check
-//                  |tale before head|    |  tale before head through overflow  |
+assign wr_ready = ( (tail + 1 == head) || ( (tail == FIFO_DEPTH) && (head == 0) ) ) ? 0 : 1; //capacity check
+//                  |tail before head|    |  tail before head through overflow  |
 
 always @(posedge clk) begin
     if(reset) begin //reset
-        capacity <= 0;
         head <= 0;
+        tail <= 0;
         rd_val <= 0;
-        rd_data <= 0;4
+        rd_data <= 0;
     end
 end
     
 always @(posedge clk) begin
     if(rd_en & ~wr_en & ~reset) begin               //read
-        if(head != tale) begin                          //we have data
+        if(head != tail) begin                          //we have data
             head <= (head < FIFO_DEPTH)? head + 1: 0;       //new head val
                                                             //the ternary operator implements the transition
                                                             //of the head to the top of the list                   
@@ -52,11 +52,11 @@ always @(posedge clk) begin
 end
 
 always @(posedge clk) begin
-    if (~rd_en & wr_en & ~reset) begin              //tale
-        tale <= (tale < FIFO_DEPTH)? tale + 1: 0;       //new tale val
+    if (~rd_en & wr_en & ~reset) begin              //tail
+        tail <= (tail < FIFO_DEPTH)? tail + 1: 0;       //new tail val
                                                         //the ternary operator implements the transition
-                                                        //of the tale to the top of the list                   
-        mem[(tale < FIFO_DEPTH)? tale + 1: 0] <= wr_data;
+                                                        //of the tail to the top of the list                   
+        mem[(tail < FIFO_DEPTH)? tail: 0] <= wr_data;
     end
 end
 
