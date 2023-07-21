@@ -35,9 +35,7 @@ always @(posedge clk) begin
         rd_val <= 0;
         rd_data <= 0;
     end
-end
-    
-always @(posedge clk) begin
+
     if(rd_en & ~wr_en & ~reset) begin               //read
         if(head != tail) begin                          //we have data
             head <= (head < FIFO_DEPTH)? head + 1: 0;       //new head val
@@ -49,9 +47,7 @@ always @(posedge clk) begin
             rd_val <= 0;
         end
     end
-end
 
-always @(posedge clk) begin
     if (~rd_en & wr_en & ~reset) begin              //tail
         tail <= (tail < FIFO_DEPTH)? tail + 1: 0;       //new tail val
                                                         //the ternary operator implements the transition
