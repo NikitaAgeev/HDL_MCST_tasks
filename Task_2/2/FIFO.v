@@ -29,31 +29,55 @@ assign wr_ready = ( (tail + 1 == head) || ( (tail == FIFO_DEPTH) && (head == 0) 
 //                  |tail before head|    |  tail before head through overflow  |
 
 always @(posedge clk) begin
-    if(reset) begin //reset
+    if(reset)
         head <= 0;
-        tail <= 0;
-        rd_val <= 0;
-        rd_data <= 0;
-    end
-
-    if(rd_en & ~wr_en & ~reset) begin               //read
+    else if(rd_en & ~wr_en) begin
         if(head != tail) begin                          //we have data
             head <= (head < FIFO_DEPTH)? head + 1: 0;       //new head val
                                                             //the ternary operator implements the transition
-                                                            //of the head to the top of the list                   
-            rd_data <= mem[head];
-            rd_val <= 1;
-        end else begin                                  //FIFO is empty
-            rd_val <= 0;
+                                                            //of the head to the top of the list   
         end
     end
+end
 
-    if (~rd_en & wr_en & ~reset) begin              //tail
+always @(posedge clk) begin
+    if(reset)
+        tail <= 0;     
+    else if(~rd_en & wr_en) begin                   //tail
         tail <= (tail < FIFO_DEPTH)? tail + 1: 0;       //new tail val
                                                         //the ternary operator implements the transition
                                                         //of the tail to the top of the list                   
+    end
+end
+
+
+
+always @(posedge clk) begin
+    if(reset)
+        rd_val <= 0;
+    else if(rd_en & ~wr_en) begin
+        if(head != tail)            //we have data
+            rd_val <= 1;
+        else                        //FIFO is empty
+            rd_val <= 0;
+    end
+end
+
+always @(posedge clk) begin
+    if(reset)
+        rd_data <= 0;
+    else if(rd_en & ~wr_en) begin
+        if(head != tail)            //we have data
+            rd_data <= mem[head];
+    end
+end
+
+always @(posedge clk) begin
+      
+    if(~rd_en & wr_en & ~reset) begin
         mem[(tail < FIFO_DEPTH)? tail: 0] <= wr_data;
     end
 end
+
 
 endmodule
