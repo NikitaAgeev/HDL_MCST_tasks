@@ -75,7 +75,7 @@ end
 always @(posedge clk) begin
       
     if(~rd_en & wr_en & ~reset) begin
-        mem[(tail < FIFO_DEPTH)? tail: 0] <= wr_data;
+        mem[tail] <= wr_data;
     end
 end
 

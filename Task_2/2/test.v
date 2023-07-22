@@ -1,6 +1,7 @@
 `timescale 1ns/100ps
 
 `include "FIFO.v"
+`include "shear_FIFO.v"
 
 module top;
 
@@ -39,6 +40,12 @@ initial begin
     #1 clk = ~clk; //negedge
 
     data_in = 10;
+    wr_sig = 1;
+    #1 clk = ~clk; //posedge
+    #1 wr_sig = 0;
+    #1 clk = ~clk; //negedge
+
+    data_in = 12;
     wr_sig = 1;
     #1 clk = ~clk; //posedge
     #1 wr_sig = 0;
