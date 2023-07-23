@@ -41,30 +41,31 @@ endgenerate
 
 //big CSA
 // 1 layer
-wire [64:0] layer_1_result [11:0];
+wire [64:0] layer_1_result [9:0];
 CSA CSA_0_1(.op1(middle_res[0]), .op2(middle_res[1]), .op3(middle_res[2]), .ps(layer_1_result[0]), .pc(layer_1_result[1]));
 CSA CSA_1_1(.op1(middle_res[3]), .op2(middle_res[4]), .op3(middle_res[5]), .ps(layer_1_result[2]), .pc(layer_1_result[3]));
 CSA CSA_2_1(.op1(middle_res[6]), .op2(middle_res[7]), .op3(middle_res[8]), .ps(layer_1_result[4]), .pc(layer_1_result[5]));
 CSA CSA_3_1(.op1(middle_res[9]), .op2(middle_res[10]), .op3(middle_res[11]), .ps(layer_1_result[6]), .pc(layer_1_result[7]));
 CSA CSA_4_1(.op1(middle_res[12]), .op2(middle_res[13]), .op3(middle_res[14]), .ps(layer_1_result[8]), .pc(layer_1_result[9]));
-CSA CSA_5_1(.op1(middle_res[15]), .op2(65'b0), .op3(65'b0), .ps(layer_1_result[10]), .pc(layer_1_result[11]));
+//no 0_15
 
 // 2 layer
-wire [64:0] layer_2_result [7:0];
+wire [64:0] layer_2_result [5:0];
 CSA CSA_0_2(.op1(layer_1_result[0]), .op2(layer_1_result[1]), .op3(layer_1_result[2]), .ps(layer_2_result[0]), .pc(layer_2_result[1]));
 CSA CSA_1_2(.op1(layer_1_result[3]), .op2(layer_1_result[4]), .op3(layer_1_result[5]), .ps(layer_2_result[2]), .pc(layer_2_result[3]));
 CSA CSA_2_2(.op1(layer_1_result[6]), .op2(layer_1_result[7]), .op3(layer_1_result[8]), .ps(layer_2_result[4]), .pc(layer_2_result[5]));
-CSA CSA_3_2(.op1(layer_1_result[9]), .op2(layer_1_result[10]), .op3(layer_1_result[11]), .ps(layer_2_result[6]), .pc(layer_2_result[7]));
+//no 0_15 and 1_9
 
 // 3 layer
 wire [64:0] layer_3_result [3:0];
 CSA CSA_0_3(.op1(layer_2_result[0]), .op2(layer_2_result[1]), .op3(layer_2_result[2]), .ps(layer_3_result[0]), .pc(layer_3_result[1]));
 CSA CSA_1_3(.op1(layer_2_result[3]), .op2(layer_2_result[4]), .op3(layer_2_result[5]), .ps(layer_3_result[2]), .pc(layer_3_result[3]));
+//no 0_15 and 1_9
 
 // 4 layer
 wire [64:0] layer_4_result [3:0];
 CSA CSA_0_4(.op1(layer_3_result[0]), .op2(layer_3_result[1]), .op3(layer_3_result[2]), .ps(layer_4_result[0]), .pc(layer_4_result[1]));
-CSA CSA_1_4(.op1(layer_3_result[3]), .op2(layer_2_result[6]), .op3(layer_2_result[7]), .ps(layer_4_result[2]), .pc(layer_4_result[3]));
+CSA CSA_1_4(.op1(layer_3_result[3]), .op2(middle_res[15]), .op3(layer_1_result[9]), .ps(layer_4_result[2]), .pc(layer_4_result[3]));
 
 // 5 layer
 wire [64:0] layer_5_result [1:0];
@@ -78,22 +79,30 @@ CSA CSA_0_6(.op1(layer_5_result[0]), .op2(layer_5_result[1]), .op3(layer_4_resul
 assign overflow = ~(res[64:32] == 33'b0);
 
 always @(posedge clk) begin
-    if(reset) begin
+    if(reset)
         ctr <= 0;
-        val <= 0;
+    else begin
+        if(en & ~ctr)
+            ctr <= 1;
+        if(ctr)
+            ctr <= 0;
     end
-    
-    if(en & ~ctr) begin
-        val <= 0;
-        ctr <= 1;
-    end
+end
 
-    if(ctr) begin
-        ctr <= 0;
-        val <= 1;
+always @(posedge clk) begin
+    if(reset)
+        val <= 0;
+    else begin
+        if(en & ~ctr)
+            val <= 0;
+        if(ctr)
+            val <= 1;
+    end
+end
+
+always @(posedge clk) begin
+    if(ctr & ~reset)
         res <= layer_6_result[1] + layer_6_result[0];
-    end
-
 end
 
 endmodule
