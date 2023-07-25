@@ -9,7 +9,7 @@ module multiplier
     input wire [31:0] op1,
     input wire [31:0] op2,
 
-    output reg [64:0] res,
+    output reg [63:0] res,
     output reg val,
     output wire overflow
 );
@@ -18,7 +18,7 @@ wire [32:0] op2_ex;
 
 assign op2_ex = {{op2}, 1'b0}; //expanded op2
 
-reg [64:0] middle_res [(30/2): 0];
+reg [63:0] middle_res [(30/2): 0];
 
 reg ctr;
 
@@ -28,11 +28,11 @@ generate
     for(i = 31; i > 0; i = i - 2) begin: loop
         always @(posedge clk) begin
             if(en & ~ctr) begin
-            middle_res[(i-1)/2] <= ( (op2_ex[i+1:i-1] == 3'b001) || (op2_ex[i+1:i-1] == 3'b010) ) ?  {{(32+2 - i){1'b0}}, {op1}, {(i-1){1'b0}}}    : //     op1 << i-1
-                                   ( (op2_ex[i+1:i-1] == 3'b011)                                ) ?  {{(32+1 - i){1'b0}}, {op1}, {(i){1'b0}}}      : //  2*(op1 << i-1)
-                                   ( (op2_ex[i+1:i-1] == 3'b101) || (op2_ex[i+1:i-1] == 3'b110) ) ? ~{{(32+2 - i){1'b0}}, {op1}, {(i-1){1'b0}}} + 1: //   -(op1 << i-1)
-                                   ( (op2_ex[i+1:i-1] == 3'b100)                                ) ? ~{{(32+1 - i){1'b0}}, {op1}, {(i){1'b0}}}   + 1: // -2*(op1 << i-1)
-                                   65'b0;                                                                                                             //     0
+            middle_res[(i-1)/2] <= ( (op2_ex[i+1:i-1] == 3'b001) || (op2_ex[i+1:i-1] == 3'b010) ) ?  {{(32+1 - i){1'b0}}, {op1}, {(i-1){1'b0}}}    : //     op1 << i-1
+                                   ( (op2_ex[i+1:i-1] == 3'b011)                                ) ?  {{(32+0 - i){1'b0}}, {op1}, {(i){1'b0}}}      : //  2*(op1 << i-1)
+                                   ( (op2_ex[i+1:i-1] == 3'b101) || (op2_ex[i+1:i-1] == 3'b110) ) ? ~{{(32+1 - i){1'b0}}, {op1}, {(i-1){1'b0}}} + 1: //   -(op1 << i-1)
+                                   ( (op2_ex[i+1:i-1] == 3'b100)                                ) ? ~{{(32+0 - i){1'b0}}, {op1}, {(i){1'b0}}}   + 1: // -2*(op1 << i-1)
+                                   64'b0;                                                                                                            //     0
             end
         end
     end 
@@ -76,7 +76,7 @@ wire [64:0] layer_6_result [1:0];
 CSA CSA_0_6(.op1(layer_5_result[0]), .op2(layer_5_result[1]), .op3(layer_4_result[3]), .ps(layer_6_result[0]), .pc(layer_6_result[1]));
 
 
-assign overflow = ~(res[64:32] == 33'b0);
+assign overflow = ~(res[63:32] == 33'b0);
 
 always @(posedge clk) begin
     if(reset)

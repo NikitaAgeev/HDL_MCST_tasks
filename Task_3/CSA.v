@@ -1,10 +1,10 @@
 module CSA (
-    input wire [64:0] op1,
-    input wire [64:0] op2,
-    input wire [64:0] op3,
+    input wire [63:0] op1,
+    input wire [63:0] op2,
+    input wire [63:0] op3,
 
-    output wire [64:0] ps,
-    output wire [64:0] pc
+    output wire [63:0] ps,
+    output wire [63:0] pc
 );
      
     assign ps =  op1 ^ op2 ^ op3;
