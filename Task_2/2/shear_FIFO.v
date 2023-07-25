@@ -31,8 +31,13 @@ assign wr_ready = tail < FIFO_DEPTH;
 always @(posedge clk) begin
     if(reset)
         tail <= 0;     
-    else if(~rd_en & wr_en) begin                   
+    else if(~rd_en & wr_en)              
         tail <= tail + 1;             
+    else if(rd_en & ~wr_en)begin
+        if(tail != 0)           //we have data
+            rd_val <= 1;
+        else                        //FIFO is empty
+            rd_val <= 0;
     end
 end
 
@@ -42,7 +47,7 @@ always @(posedge clk) begin
     if(reset)
         rd_val <= 0;
     else if(rd_en & ~wr_en) begin
-        if(tail != 0)            //we have data
+        if(tail != 0)           //we have data
             rd_val <= 1;
         else                        //FIFO is empty
             rd_val <= 0;

@@ -18,7 +18,7 @@ module FIFO
     output reg wr_ready
 );
 
-parameter MEMORY_CNT_SIZE = $clog2(FIFO_DEPTH);
+parameter MEMORY_CNT_SIZE = $clog2(FIFO_DEPTH + 1);
 
 reg [MEMORY_CNT_SIZE -1:0] tail;  //tail of ring list 
 reg [MEMORY_CNT_SIZE -1:0] head;  //head of ring list
