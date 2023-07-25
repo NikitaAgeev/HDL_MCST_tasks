@@ -23,10 +23,25 @@ parameter MEMORY_CNT_SIZE = $clog2(FIFO_DEPTH + 1);
 reg [MEMORY_CNT_SIZE -1:0] tail;  //tail of ring list 
 reg [MEMORY_CNT_SIZE -1:0] head;  //head of ring list
 
-reg [DATA_WIDTH -1:0] mem [FIFO_DEPTH :0]; //ring list mem
+reg [DATA_WIDTH -1:0] mem [FIFO_DEPTH -1:0]; //ring list mem
 
-assign wr_ready = ( (tail + 1 == head) || ( (tail == FIFO_DEPTH) && (head == 0) ) ) ? 0 : 1; //capacity check
-//                  |tail before head|    |  tail before head through overflow  |
+reg no_full;
+
+assign wr_ready = no_full; //capacity check
+
+always @(posedge clk) begin
+    if(reset)
+        no_full <= 1;
+    else if(~rd_en & wr_en) begin
+        if ( (tail + 1 == head) || ( (tail == FIFO_DEPTH) && (head == 0) ) ) begin //capacity check
+//           |tail before head|    |  tail before head through overflow  |
+            no_full <= 0;
+        end
+    end
+    else if(rd_en & ~wr_en & ~no_full)
+        no_full <= 1;
+end
+
 
 always @(posedge clk) begin
     if(reset)
