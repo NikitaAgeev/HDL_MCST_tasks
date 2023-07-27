@@ -50,6 +50,9 @@ initial begin
         $display("res = %d, real res = %d", data_out, data_1*data_2);
     end
     
+    @(posedge clk)
+    @(posedge clk)
+
     @(posedge clk) $stop;
 
 
