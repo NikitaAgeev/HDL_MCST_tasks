@@ -1,6 +1,6 @@
 //FIFO is made based on the shear list
 
-module FIFO
+module shear_FIFO
 #(
     parameter FIFO_DEPTH = 100,
     parameter DATA_WIDTH = 8
@@ -31,23 +31,20 @@ assign wr_ready = tail < FIFO_DEPTH;
 always @(posedge clk) begin
     if(reset)
         tail <= 0;     
-    else if(~rd_en & wr_en)              
+    else if(wr_en & ~rd_en)              
         tail <= tail + 1;             
     else if(rd_en & ~wr_en)begin
-        if(tail != 0)           //we have data
-            rd_val <= 1;
-        else                        //FIFO is empty
-            rd_val <= 0;
+        if(tail != 0)
+            tail <= tail - 1;
     end
 end
-
 
 
 always @(posedge clk) begin
     if(reset)
         rd_val <= 0;
-    else if(rd_en & ~wr_en) begin
-        if(tail != 0)           //we have data
+    else if(rd_en) begin
+        if((tail != 0) || wr_en)    //we have data
             rd_val <= 1;
         else                        //FIFO is empty
             rd_val <= 0;
@@ -57,9 +54,11 @@ end
 always @(posedge clk) begin
     if(reset)
         rd_data <= 0;
-    else if(rd_en & ~wr_en) begin
+    else if(rd_en) begin
         if(tail != 0)            //we have data
             rd_data <= mem[0];
+        else if(wr_en)
+            rd_data <= wr_data;
     end
 end
 
@@ -68,19 +67,16 @@ genvar i;
 generate
 for(i = 0; i < FIFO_DEPTH - 1; i = i + 1) begin: loop
     always @(posedge clk) begin    
-        if(rd_en & ~wr_en & ~reset)
+        if(rd_en & ~reset)
                 mem[i] <= mem[i + 1];
+        if(wr_en & ~rd_en & ~reset & (tail == i))
+            mem[i] <= wr_data;
+        if(wr_en & rd_en & (tail != 0) & (tail - 1 == i))
+            mem[i] <= wr_data;
     end
 end
 endgenerate
 
-always @(posedge clk) begin
-
-     
-    if(~rd_en & wr_en & ~reset) begin
-        mem[tail] <= wr_data;
-    end
-end
 
 
 endmodule

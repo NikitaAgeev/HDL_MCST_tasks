@@ -16,6 +16,8 @@ wire wr_ready;
 
 reg [7:0] data_in;
 wire [7:0] data_out;
+wire [7:0] data_out_2;
+
 
 
 FIFO test_FIFO(.clk(clk),
@@ -28,36 +30,91 @@ FIFO test_FIFO(.clk(clk),
                .wr_data(data_in)
                );
 
+shear_FIFO test_FIFO_2(.clk(clk),
+                       .reset(reset),
+                       .rd_en(rd_sig),
+                       .wr_en(wr_sig),
+                       .rd_val(rd_val),
+                       .wr_ready(wr_ready),
+                       .rd_data(data_out_2),
+                       .wr_data(data_in)
+                       );
+
 initial begin
     rd_sig = 0;
     wr_sig = 0;
     data_in = 0;
-
     clk = 1'b0;
-    reset = 1;
-    #1 clk = ~clk; //posedge
-    #1 reset = 0;
-    #1 clk = ~clk; //negedge
 
-    data_in = 10;
-    wr_sig = 1;
-    #1 clk = ~clk; //posedge
-    #1 wr_sig = 0;
-    #1 clk = ~clk; //negedge
+    @(posedge clk) reset = 1;
+    
+    @(negedge clk) reset = 1;
 
-    data_in = 12;
-    wr_sig = 1;
-    #1 clk = ~clk; //posedge
-    #1 wr_sig = 0;
-    #1 clk = ~clk; //negedge
+    @(posedge clk) reset = 1;
+    
+    @(negedge clk) begin
+        reset = 0;
+        data_in <= 11;
+        
+        wr_sig <= 1;
+        rd_sig <= 1;
+    end    
+    @(posedge clk) begin
+        #1 $display("in data = %d | out data = [%d,%d]", data_in, data_out, data_out_2);
+    end
 
-    rd_sig = 1;
-    #1 clk = ~clk; //posedge
-    #1 rd_sig = 0;
-    #1 clk = ~clk; //negedge
-    $display("out = %b", data_out);
+    @(negedge clk) begin
+        //wr_sig <= 0;
+        data_in <= 12;
 
+        rd_sig <= 0;
+        wr_sig <= 1;
+    end
+    @(posedge clk) begin
+        #1 $display("in data = %d", data_in);
+    end
+
+    @(negedge clk) begin
+        data_in <= 13;
+        
+        rd_sig <= 0;
+        wr_sig <= 1;
+    end
+    @(posedge clk) begin
+        #1 $display("in data = %d", data_in);
+    end
+
+    @(negedge clk) begin
+        //data_in <= 14;
+        
+        wr_sig <= 0;
+        rd_sig <= 1;
+    end
+    @(posedge clk) begin
+        #1 $display("out data = [%d,%d]", data_out, data_out_2);
+    end
+
+    @(negedge clk) begin
+        reset = 0;
+        data_in <= 15;
+        
+        wr_sig <= 1;
+        rd_sig <= 1;
+    end    
+    @(posedge clk) begin
+        #1 $display("in data = %d | out data = [%d,%d]", data_in, data_out, data_out_2);
+    end
+
+    @(negedge clk) begin
+        rd_sig <= 0;
+        wr_sig <= 0;
+    end
+
+    $stop;
 end
 
+always begin
+#5 clk = ~clk;
+end
 
 endmodule
