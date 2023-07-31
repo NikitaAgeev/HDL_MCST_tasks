@@ -31,9 +31,9 @@ assign wr_ready = tail < FIFO_DEPTH;
 always @(posedge clk) begin
     if(reset)
         tail <= 0;     
-    else if(wr_en & ~rd_en)              
+    else if(wr_en & ~rd_en & wr_ready)              
         tail <= tail + 1;             
-    else if(rd_en & ~wr_en)begin
+    else if(rd_en & ~wr_en & wr_ready)begin
         if(tail != 0)
             tail <= tail - 1;
     end
@@ -67,12 +67,12 @@ genvar i;
 generate
 for(i = 0; i < FIFO_DEPTH - 1; i = i + 1) begin: loop
     always @(posedge clk) begin    
-        if(rd_en & ~reset)
+        if(wr_en & ~rd_en & ~reset & (tail == i) & wr_ready)
+            mem[i] <= wr_data;
+        else if(wr_en & rd_en & (tail != 0) & (tail - 1 == i) & wr_ready)
+            mem[i] <= wr_data;
+        else if(rd_en & ~reset)
                 mem[i] <= mem[i + 1];
-        if(wr_en & ~rd_en & ~reset & (tail == i))
-            mem[i] <= wr_data;
-        if(wr_en & rd_en & (tail != 0) & (tail - 1 == i))
-            mem[i] <= wr_data;
     end
 end
 endgenerate
