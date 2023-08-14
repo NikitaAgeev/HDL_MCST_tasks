@@ -1,4 +1,4 @@
-`include "../../Other_modules/shifter.v"
+`include "shifter.v"
 
 module mant_preparer
 (
@@ -17,24 +17,35 @@ module mant_preparer
     input wire denorm_op_1,
     input wire denorm_op_2,
 
-    output wire [47:0] op_1_f_pr,
-    output wire [47:0] op_2_f_pr  
+    output wire [48:0] op_1_f_pr,
+    output wire [48:0] op_2_f_pr  
 );
 
-wire [47:0] op_1_f_pre_pr;
-wire [47:0] op_2_f_pre_pr;
 
-assign op_1_f_pre_pr = (denorm_op_1)? {{1'b0}, {op_1_f}, {24'b0}}: {{1'b1}, {op_1_f}, {24'b0}};
-assign op_2_f_pre_pr = (denorm_op_2)? {{1'b0}, {op_2_f}, {24'b0}}: {{1'b1}, {op_2_f}, {24'b0}};
+//step_1: ex_forward =========================================================================
+wire [24:0] op_1_f_fex;
+wire [24:0] op_2_f_fex;
 
-wire [4:0] op_1_shift;
-wire [4:0] op_2_shift;
+assign op_1_f_fex = (denorm_op_1)? {{2'b00}, {op_1_f}}: {{2'b01}, {op_1_f}};
+assign op_2_f_fex = (denorm_op_2)? {{2'b00}, {op_2_f}}: {{2'b01}, {op_2_f}};
 
-assign op_1_shift = (exp_gr_1)? 5'b0: exp_del;
-assign op_2_shift = (exp_gr_2)? 5'b0: exp_del;
+//step_2: sign ===============================================================================
 
-shifter shifter_op_1(.in(op_1_f_pre_pr), .out(op_1_f_pr), .shift(op_1_shift));
-shifter shifter_op_2(.in(op_2_f_pre_pr), .out(op_2_f_pr), .shift(op_2_shift));
+wire [24:0] op_1_f_s_pr;
+wire [24:0] op_2_f_s_pr;
 
+assign op_1_f_s_pr = (sign_op_1)? ~op_1_f_fex + 1 : op_1_f_fex;
+assign op_2_f_s_pr = (sign_op_2)? ~op_2_f_fex + 1 : op_2_f_fex;
+
+//step_3: shift ==============================================================================
+
+wire [7:0] op_1_shift;
+wire [7:0] op_2_shift;
+
+assign op_1_shift = (exp_gr_1)? exp_del: 7'b0;
+assign op_2_shift = (exp_gr_2)? exp_del: 7'b0;
+
+shifter shifter_op_1 (.in(op_1_f_s_pr), .shift(op_1_shift), .sig(sign_op_1), .out(op_1_f_pr));
+shifter shifter_op_2 (.in(op_2_f_s_pr), .shift(op_2_shift), .sig(sign_op_2), .out(op_2_f_pr));
 
 endmodule

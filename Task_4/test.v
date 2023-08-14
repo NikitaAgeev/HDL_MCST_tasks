@@ -17,8 +17,8 @@ wire legal;
 
 wire [7:0] exp_max;
 
-wire [47:0] mant_op_1;
-wire [47:0] mant_op_2;
+wire [48:0] mant_op_1;
+wire [48:0] mant_op_2;
 
 preparer preparer (.op_1(op_1),
                    .op_2(op_2),
@@ -34,8 +34,8 @@ preparer preparer (.op_1(op_1),
 initial begin
     clk = 0;
 
-    op_1 = {{1'b1}, {~8'b0}, {23'b0}};
-    op_2 = {{1'b0}, {~8'b0}, {23'b0}};
+    op_1 = {{1'b1}, {8'b111}, {23'b1}};
+    op_2 = {{1'b0}, {8'b100}, {23'b1}};
 
     @(posedge clk);
     @(posedge clk);
