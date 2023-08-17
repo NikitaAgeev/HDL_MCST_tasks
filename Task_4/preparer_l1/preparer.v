@@ -18,9 +18,8 @@ module preparer
 
     output wire [7:0] exp_max,
 
-    output wire [48:0] mant_op_1,
-    output wire [48:0] mant_op_2
-    
+    output wire [49:0] mant_op_1,
+    output wire [49:0] mant_op_2
 );
 
 

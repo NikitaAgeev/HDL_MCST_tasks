@@ -17,22 +17,22 @@ module mant_preparer
     input wire denorm_op_1,
     input wire denorm_op_2,
 
-    output wire [48:0] op_1_f_pr,
-    output wire [48:0] op_2_f_pr  
+    output wire [49:0] op_1_f_pr,
+    output wire [49:0] op_2_f_pr  
 );
 
 
 //step_1: ex_forward =========================================================================
-wire [24:0] op_1_f_fex;
-wire [24:0] op_2_f_fex;
+wire [25:0] op_1_f_fex;
+wire [25:0] op_2_f_fex;
 
-assign op_1_f_fex = (denorm_op_1)? {{2'b00}, {op_1_f}}: {{2'b01}, {op_1_f}};
-assign op_2_f_fex = (denorm_op_2)? {{2'b00}, {op_2_f}}: {{2'b01}, {op_2_f}};
+assign op_1_f_fex = (denorm_op_1)? {{3'b000}, {op_1_f}}: {{3'b001}, {op_1_f}};
+assign op_2_f_fex = (denorm_op_2)? {{3'b000}, {op_2_f}}: {{3'b001}, {op_2_f}};
 
 //step_2: sign ===============================================================================
 
-wire [24:0] op_1_f_s_pr;
-wire [24:0] op_2_f_s_pr;
+wire [25:0] op_1_f_s_pr;
+wire [25:0] op_2_f_s_pr;
 
 assign op_1_f_s_pr = (sign_op_1)? ~op_1_f_fex + 1 : op_1_f_fex;
 assign op_2_f_s_pr = (sign_op_2)? ~op_2_f_fex + 1 : op_2_f_fex;
