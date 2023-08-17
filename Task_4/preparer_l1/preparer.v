@@ -94,6 +94,20 @@ exp_analiser exp_analiser (.exp_1(op_1_e),
 );
 //=============================================
 
+//sign_anoliser ===============================
+wire res_sig_leg;
+
+sign_analiser sign_analiser (.sign_op_1(op_1_s),
+                             .sign_op_2(op_2_s),
+                             .exp_gr_1(gr_1),
+                             .exp_gr_2(gr_2),
+                             .exp_eq(eq),
+                             .op_1_f(op_1_f),
+                             .op_2_f(op_2_f),
+                             .res_sign(res_sig_leg)
+                             );
+//=============================================
+
 //mant_preparer ===============================
 mant_preparer mant_preparer (.sign_op_1(op_1_s),
                              .sign_op_2(op_2_s),
@@ -106,21 +120,8 @@ mant_preparer mant_preparer (.sign_op_1(op_1_s),
                              .denorm_op_2(op_2_denorm),
                              .op_1_f_pr(mant_op_1),
                              .op_2_f_pr(mant_op_2),
-                             .exp_del(del)
-                             );
-//=============================================
-
-//sign_anoliser ===============================
-wire res_sig_leg;
-
-sign_analiser sign_analiser (.sign_op_1(op_1_s),
-                             .sign_op_2(op_2_s),
-                             .exp_gr_1(gr_1),
-                             .exp_gr_2(gr_2),
-                             .exp_eq(eq),
-                             .op_1_f(op_1_f),
-                             .op_2_f(op_2_f),
-                             .res_sign(res_sig_leg)
+                             .exp_del(del),
+                             .res_sig(res_sig_leg)
                              );
 //=============================================
 
