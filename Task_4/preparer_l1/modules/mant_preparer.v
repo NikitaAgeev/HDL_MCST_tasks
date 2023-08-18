@@ -44,8 +44,8 @@ assign op_2_f_s_pr = ((~sign_op_1 &  res_sig) | ( sign_op_1 & ~res_sig))? ~op_2_
 wire [7:0] op_1_shift;
 wire [7:0] op_2_shift;
 
-assign op_1_shift = (exp_gr_1)? exp_del: 7'b0;
-assign op_2_shift = (exp_gr_2)? exp_del: 7'b0;
+assign op_1_shift = (exp_gr_1)? 7'b0: exp_del;
+assign op_2_shift = (exp_gr_2)? 7'b0: exp_del;
 
 shifter shifter_op_1 (.in(op_1_f_s_pr), .shift(op_1_shift), .sig(sign_op_1), .out(op_1_f_pr));
 shifter shifter_op_2 (.in(op_2_f_s_pr), .shift(op_2_shift), .sig(sign_op_2), .out(op_2_f_pr));

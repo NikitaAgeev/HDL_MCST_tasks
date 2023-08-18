@@ -14,7 +14,6 @@ module preparer
     output wire NaN_res,
     output wire inf_res,
     output wire res_sig,
-    output wire legal,
 
     output wire [7:0] exp_max,
 

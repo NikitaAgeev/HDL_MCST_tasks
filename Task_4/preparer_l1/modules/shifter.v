@@ -1,6 +1,6 @@
 module shifter(
     input wire [25:0] in,
-    input wire [4:0] shift,
+    input wire [7:0] shift,
     input wire sig,
 
     output wire [49:0] out

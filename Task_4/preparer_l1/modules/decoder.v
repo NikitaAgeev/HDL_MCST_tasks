@@ -8,8 +8,7 @@ module decoder
 
     output wire NaN,
     output wire inf,
-    output wire denorm,
-    output wire zero
+    output wire denorm
 );
 
 //splitter
@@ -20,7 +19,6 @@ assign op_f = op[22:0];
 //status decoder
 assign NaN    = (op_e == 8'b11111111) & (op_f != 23'b0);
 assign inf    = (op_e == 8'b11111111) & (op_f == 23'b0);
-assign denorm = (op_e == 8'b0)        & (op_f != 23'b0);
-assign zero   = (op_e == 8'b0)        & (op_f == 23'b0);
+assign denorm = (op_e == 8'b0);
 
 endmodule

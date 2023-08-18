@@ -37,7 +37,7 @@ exp_preparer exp_preparer (.leading_pos(leading_pos),
 //=======================================================
 
 // mant_preparer ========================================
-wire [21:0] mant;
+wire [22:0] mant;
 
 post_mant_preparer post_mant_preparer (.leading_pos(leading_pos),
                              .unsign_mant(pre_pr_mant),
@@ -47,9 +47,9 @@ post_mant_preparer post_mant_preparer (.leading_pos(leading_pos),
 //=======================================================
 
 // res_constractor ======================================
-assign res = (NaN_res) ? {{1'b0}, {~8'b0}, {~22'b0}}:
-             (inf_res) ? {{sig} , {~8'b0}, {22'b0} }:
-             (overflow)? {{sig} , {~8'b0}, {22'b0} }: 
+assign res = (NaN_res) ? {{1'b0}, {~8'b0}, {~23'b0}}:
+             (inf_res) ? {{sig} , {~8'b0}, {23'b0} }:
+             (overflow)? {{sig} , {~8'b0}, {23'b0} }: 
                          {{sig} , {exp}  , {mant}  };
 //=======================================================
 
