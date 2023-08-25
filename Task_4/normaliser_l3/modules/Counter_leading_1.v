@@ -4,7 +4,7 @@ module  counter_leading_1
     parameter OUT_SIZE = $clog2(IN_SIZE)
 )
 (
-    input wire [IN_SIZE -1:0] in,
+    input wire [IN_SIZE -1:0] in, 
 
     output wire [OUT_SIZE -1:0] leading_pos,
     output wire zero_in
