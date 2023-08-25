@@ -13,6 +13,9 @@ module mant_preparer
 
     input wire [7:0]  exp_del,
 
+    input wire [7:0] exp_1,
+    input wire [7:0] exp_2,
+
     input wire [22:0] op_1_f,
     input wire [22:0] op_2_f,
 
@@ -37,7 +40,7 @@ wire [25:0] op_1_f_s_pr;
 wire [25:0] op_2_f_s_pr;
 
 assign op_1_f_s_pr = (( sign_op_1 & ~res_sig) | (~sign_op_1 &  res_sig))? ~op_1_f_fex + 1 : op_1_f_fex;
-assign op_2_f_s_pr = ((~sign_op_1 &  res_sig) | ( sign_op_1 & ~res_sig))? ~op_2_f_fex + 1 : op_2_f_fex;
+assign op_2_f_s_pr = ((~sign_op_2 &  res_sig) | ( sign_op_2 & ~res_sig))? ~op_2_f_fex + 1 : op_2_f_fex;
 
 //step_3: shift ==============================================================================
 

@@ -120,7 +120,9 @@ mant_preparer mant_preparer (.sign_op_1(op_1_s),
                              .op_1_f_pr(mant_op_1),
                              .op_2_f_pr(mant_op_2),
                              .exp_del(del),
-                             .res_sig(res_sig_leg)
+                             .res_sig(res_sig_leg),
+                             .exp_1(op_1_e),
+                             .exp_2(op_2_e)
                              );
 //=============================================
 

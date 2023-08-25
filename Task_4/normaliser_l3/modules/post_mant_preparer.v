@@ -15,7 +15,7 @@ wire [8:0] exp_max_ex;
 assign exp_max_ex = {{1'b0}, {exp_max}};
 
 wire [49:0] pre_pr_mant;
-assign pre_pr_mant = ((exp_max_ex + 9'b1) < (norm_leading_pos))? unsign_mant << (exp_max_ex + 9'b11): unsign_mant << (norm_leading_pos + 7'b1);
+assign pre_pr_mant = ((exp_max_ex + 9'b10) < (norm_leading_pos))? unsign_mant << (exp_max_ex + 9'b11): unsign_mant << (norm_leading_pos + 7'b1);
 
 assign mant = pre_pr_mant[49:(49 - 22)];
 assign roundoff_bit = pre_pr_mant[49 - 23]; 
